@@ -1,0 +1,74 @@
+{
+  "collection_summary": {
+    "total_watches": 25,
+    "price_range": {
+      "lowest": "$280",
+      "highest": "$8,500"
+    },
+    "brands_included": [
+      "Oris",
+      "Breitling", 
+      "Mont Blanc",
+      "Frederique Constant",
+      "Omega",
+      "Tudor",
+      "Seiko",
+      "Casio",
+      "Citizen",
+      "Tissot",
+      "Hamilton",
+      "Jaeger-LeCoultre",
+      "Longines"
+    ],
+    "conditions": [
+      "Brand New (10/10)",
+      "Like New",
+      "Unworn",
+      "Very Good (9.8/10)",
+      "Very Good (9.6/10)",
+      "Very Good",
+      "Good (9.3/10)",
+      "Good (9.2/10)",
+      "Good (9.1/10)",
+      "Good (9.0/10)",
+      "Excellent"
+    ],
+    "special_features": [
+      "Full Set",
+      "Box & Papers",
+      "Limited Edition",
+      "Authenticated",
+      "Factory Warranty",
+      "Extra Straps",
+      "Complete Calendar",
+      "GMT Function",
+      "Chronograph",
+      "Solar Powered",
+      "Eco-Drive",
+      "Shock Resistant"
+    ]
+  },
+  "business_info": {
+    "company_name": "StandardTime",
+    "tagline": "Premium Pre-Owned Luxury Watches",
+    "website": "www.standardtimepiece.com",
+    "contact": {
+      "email": "standardtimepiece@gmail.com",
+      "phone": "+82 1087161870",
+      "hours": "Mon-Sun 9AM-11PM KST"
+    },
+    "chrono24_store": "https://www.chrono24.co.us/search/index.htm?customerId=34597&dosearch=true",
+    "guarantees": [
+      "Lifetime authenticity guarantee",
+      "14-day return policy",
+      "Professional authentication",
+      "Expert customer support",
+      "Worldwide free shipping",
+      "Buyer customs assistance"
+    ],
+    "payment_methods": [
+      "Wise Transfer (Recommended)",
+      "Bank Transfer"
+    ]
+  }
+}
