@@ -536,7 +536,7 @@ const Checkout: React.FC = () => {
                   {formData.paymentMethod === 'Card Payment' ? (
                     <div className="text-center py-12">
                       <CreditCard className="h-16 w-16 text-burgundy-600 mx-auto mb-4" />
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">Processing your payment...</h3>
+                      <h3 className="text-xl font-bold text-gray-900 mb-4">We are processing your order...</h3>
                       <p className="text-gray-600 mb-6">Your order will be confirmed once payment is processed.</p>
                       <button
                         onClick={handlePlaceOrder}
