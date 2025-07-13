@@ -31,9 +31,6 @@ interface Member {
   id: string;
   email: string;
   display_name: string;
-  phone?: string;
-  address?: string;
-  city?: string;
   created_at: string;
   is_admin: boolean;
 }
