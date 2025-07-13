@@ -42,7 +42,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userOrders, setUserOrders] = useState<Order[]>([]);
-  const [isAddingInfo, setIsAddingInfo] = useState(false);
   const [showOrders, setShowOrders] = useState(false);
   const [editedData, setEditedData] = useState<Partial<UserData>>({});
   const [loading, setLoading] = useState(false);
@@ -157,7 +156,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       if (error) throw error;
       
       setUserData(prev => ({ ...prev, ...editedData } as UserData));
-      setIsAddingInfo(false);
       setSuccess('Profile information saved successfully!');
       
       // Clear success message after 3 seconds
@@ -292,157 +290,100 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
             {/* Profile Section */}
             {!showOrders && (
               <div className="space-y-6">
-                {isAddingInfo ? (
-                  // Add Information Mode
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Add Your Information</h3>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        value={editedData.display_name || ''}
-                        onChange={(e) => handleInputChange('display_name', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        value={editedData.phone || ''}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
-                        placeholder="Enter your phone number"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Country
-                      </label>
-                      <input
-                        type="text"
-                        value={editedData.country || ''}
-                        onChange={(e) => handleInputChange('country', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
-                        placeholder="Enter your country"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        City
-                      </label>
-                      <input
-                        type="text"
-                        value={editedData.city || ''}
-                        onChange={(e) => handleInputChange('city', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
-                        placeholder="Enter your city"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Address
-                      </label>
-                      <input
-                        type="text"
-                        value={editedData.address || ''}
-                        onChange={(e) => handleInputChange('address', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
-                        placeholder="Enter your address"
-                      />
-                    </div>
+                {/* Profile Information Form */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Profile Information</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={userData?.email || user.email || ''}
+                      disabled
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={editedData.display_name || ''}
+                      onChange={(e) => handleInputChange('display_name', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={editedData.phone || ''}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Country
+                    </label>
+                    <input
+                      type="text"
+                      value={editedData.country || ''}
+                      onChange={(e) => handleInputChange('country', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
+                      placeholder="Enter your country"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      value={editedData.city || ''}
+                      onChange={(e) => handleInputChange('city', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
+                      placeholder="Enter your city"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      value={editedData.address || ''}
+                      onChange={(e) => handleInputChange('address', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-burgundy-500 focus:border-transparent"
+                      placeholder="Enter your address"
+                    />
+                  </div>
 
-                    <div className="flex space-x-3 pt-4">
-                      <button
-                        onClick={handleSaveProfile}
-                        disabled={loading}
-                        className="flex-1 flex items-center justify-center space-x-2 bg-burgundy-900 text-white py-3 rounded-lg font-medium hover:bg-burgundy-800 transition-colors disabled:opacity-50"
-                      >
-                        <Save className="h-5 w-5" />
-                        <span>{loading ? 'Saving...' : 'Save Information'}</span>
-                      </button>
-                      
-                      <button
-                        onClick={() => {
-                          setIsAddingInfo(false);
-                          setEditedData(userData || {});
-                          setError('');
-                        }}
-                        className="flex-1 flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                      >
-                        <X className="h-5 w-5" />
-                        <span>Cancel</span>
-                      </button>
-                    </div>
+                  <div className="pt-4">
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={loading}
+                      className="w-full flex items-center justify-center space-x-2 bg-burgundy-900 text-white py-3 rounded-lg font-medium hover:bg-burgundy-800 transition-colors disabled:opacity-50"
+                    >
+                      <Save className="h-5 w-5" />
+                      <span>{loading ? 'Saving...' : 'Save Information'}</span>
+                    </button>
                   </div>
-                ) : (
-                  // View Mode
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm text-gray-500">Email</p>
-                        <p className="font-medium">{userData?.email || user.email}</p>
-                      </div>
-                    </div>
-                    
-                    {userData?.phone && (
-                      <div className="flex items-center space-x-3">
-                        <Phone className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm text-gray-500">Phone</p>
-                          <p className="font-medium">{userData.phone}</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {(userData?.address || userData?.city || userData?.country) && (
-                      <div className="flex items-start space-x-3">
-                        <MapPin className="h-5 w-5 text-gray-400 mt-1" />
-                        <div>
-                          <p className="text-sm text-gray-500">Address</p>
-                          <p className="font-medium">
-                            {[
-                              userData?.address,
-                              userData?.city,
-                              userData?.country
-                            ].filter(Boolean).join(', ')}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {!hasProfileInfo && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-gray-600 text-sm">
-                          Add your contact information to complete your profile.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                </div>
 
                 <div className="space-y-3 pt-4">
-                  {!userData?.is_admin && !isAddingInfo && (
-                    <button
-                      onClick={() => setIsAddingInfo(true)}
-                      className="w-full flex items-center justify-center space-x-2 bg-burgundy-900 text-white py-3 rounded-lg font-medium hover:bg-burgundy-800 transition-colors"
-                    >
-                      <Plus className="h-5 w-5" />
-                      <span>{hasProfileInfo ? 'Update Information' : 'Add Information'}</span>
-                    </button>
-                  )}
-                
                   <button
                     onClick={handleSignOut}
                     className="w-full flex items-center justify-center space-x-2 bg-red-50 text-red-600 py-3 rounded-lg font-medium hover:bg-red-100 transition-colors"
