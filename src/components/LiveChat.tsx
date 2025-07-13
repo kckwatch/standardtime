@@ -8,8 +8,7 @@ interface ChatMessage {
   message: string;
   sender: 'customer' | 'admin';
   created_at: string;
-  customer_email?: string;
-  customer_name?: string;
+ 
 }
 
 const LiveChat = () => {
