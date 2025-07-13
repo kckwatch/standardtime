@@ -1,16 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Users, Award, Clock, Star, CheckCircle } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
 
 const TrustPage = () => {
-  const { t } = useLanguage();
-
   const stats = [
-    { icon: Users, value: "1,500+", label: t.happyCustomers },
-    { icon: Clock, value: "", label: t.professionalWatchExpert },
-    { icon: Award, value: "100%", label: t.authenticGuarantee },
-    { icon: Star, value: "4.9/5", label: t.customerRating }
+    { icon: Users, value: "1,500+", label: "Happy Customers" },
+    { icon: Clock, value: "", label: "Professional Watch Expert" },
+    { icon: Award, value: "100%", label: "Authentic Guarantee" },
+    { icon: Star, value: "4.9/5", label: "Customer Rating" }
   ];
 
   const testimonials = [
@@ -43,14 +40,14 @@ const TrustPage = () => {
           className="inline-flex items-center space-x-2 text-burgundy-900 hover:text-burgundy-700 mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>{t.backToStore}</span>
+          <span>Back to Store</span>
         </Link>
 
         {/* Trust Stats */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t.whyChooseUsPage}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Why Choose Us</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
-            {t.trustDescription}
+            Your trust is our foundation. Here's why thousands of customers choose StandardTime for their luxury watch needs.
           </p>
         </div>
 
@@ -75,33 +72,33 @@ const TrustPage = () => {
         {/* Guarantees */}
         <div className="bg-white rounded-2xl p-8 mb-16 shadow-sm">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t.ourGuarantees}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Guarantees</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <Shield className="h-12 w-12 text-burgundy-900 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{t.authenticityGuarantee}</h3>
-              <p className="text-gray-600">{t.authenticityDescription}</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Authenticity Guarantee</h3>
+              <p className="text-gray-600">Every watch is authenticated by our experts</p>
             </div>
             
             <div className="text-center">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{t.returnPolicy}</h3>
-              <p className="text-gray-600">{t.returnDescription}</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Return Policy</h3>
+              <p className="text-gray-600">30-day return guarantee</p>
             </div>
             
             <div className="text-center">
               <Award className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{t.lifetimeSupportTitle}</h3>
-              <p className="text-gray-600">{t.lifetimeSupportDescription}</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Lifetime Support</h3>
+              <p className="text-gray-600">Ongoing support for your timepiece</p>
             </div>
           </div>
         </div>
 
         {/* Testimonials */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t.whatCustomersSay}</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">What Customers Say</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
@@ -123,9 +120,9 @@ const TrustPage = () => {
 
         {/* Chrono24 Trust Badge */}
         <div className="text-center p-8 bg-burgundy-50 rounded-2xl">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.findUsOnChrono24}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Find Us on Chrono24</h2>
           <p className="text-gray-600 mb-6">
-            {t.chrono24Description}
+            We're also available on Chrono24, the world's leading marketplace for luxury watches.
           </p>
           <a
             href="https://www.chrono24.co.uk/search/index.htm?customerId=34597&dosearch=true"
@@ -133,7 +130,7 @@ const TrustPage = () => {
             rel="noopener noreferrer"
             className="inline-flex items-center space-x-2 bg-burgundy-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-burgundy-800 transition-colors"
           >
-            <span>{t.viewChrono24Profile}</span>
+            <span>View Chrono24 Profile</span>
             <Shield className="h-4 w-4" />
           </a>
         </div>

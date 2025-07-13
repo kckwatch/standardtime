@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Shield, Award, Clock, CreditCard, Globe, ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import watchesData from '../data/watches.json';
@@ -10,7 +9,6 @@ import AuthModal from "./AuthModal.tsx";
 const WatchDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useLanguage();
   const { user } = useAuth();
   const { convertPrice } = useCurrency();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -23,9 +21,9 @@ const WatchDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t.watchNotFound}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Watch not found</h1>
           <Link to="/" className="text-burgundy-900 hover:text-burgundy-700">
-            {t.returnToHome}
+            Return to Home
           </Link>
         </div>
       </div>
@@ -100,7 +98,7 @@ const WatchDetail = () => {
             className="inline-flex items-center space-x-2 text-burgundy-900 hover:text-burgundy-700 mb-8"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>{t.backToStore}</span>
+            <span>Back to Store</span>
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -167,15 +165,15 @@ const WatchDetail = () => {
               <div className="grid grid-cols-3 gap-4 mt-6">
                 <div className="text-center p-4 bg-white rounded-lg shadow-sm">
                   <Shield className="h-8 w-8 text-burgundy-900 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">{t.authenticatedCertified}</p>
+                  <p className="text-sm font-medium text-gray-900">Authenticated & Certified</p>
                 </div>
                 <div className="text-center p-4 bg-white rounded-lg shadow-sm">
                   <Award className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">{t.authenticGuarantee}</p>
+                  <p className="text-sm font-medium text-gray-900">Authentic Guarantee</p>
                 </div>
                 <div className="text-center p-4 bg-white rounded-lg shadow-sm">
                   <Clock className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-900">{t.professionalWatchExpert}</p>
+                  <p className="text-sm font-medium text-gray-900">Professional Watch Expert</p>
                 </div>
               </div>
             </div>
@@ -210,7 +208,7 @@ const WatchDetail = () => {
                     className="flex-1 bg-burgundy-900 text-white py-4 rounded-lg font-bold text-lg hover:bg-burgundy-800 transition-colors flex items-center justify-center space-x-2"
                   >
                     <ShoppingCart className="h-5 w-5" />
-                    <span>{t.buyNow}</span>
+                    <span>Buy Now</span>
                   </button>
                   
                   <button
@@ -221,20 +219,20 @@ const WatchDetail = () => {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    {selectedForPurchase ? '✓' : t.addToCart}
+                    {selectedForPurchase ? '✓' : 'Add to Cart'}
                   </button>
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{t.description}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Description</h3>
                 <div className="text-gray-600 leading-relaxed whitespace-pre-line">{watch.description}</div>
               </div>
 
               {/* Specifications */}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{t.specifications}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Specifications</h3>
                 <div className="bg-white rounded-lg p-6 shadow-sm">
                   <div className="grid grid-cols-2 gap-4">
                     {Object.entries(watch.specifications).map(([key, value]) => (
@@ -251,31 +249,31 @@ const WatchDetail = () => {
 
               {/* Payment Options */}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{t.paymentMethod}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Payment Method</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <div className="flex items-center space-x-2 mb-2">
                       <Globe className="h-5 w-5 text-green-600" />
-                      <span className="font-medium text-green-800">{t.wiseTransfer}</span>
+                      <span className="font-medium text-green-800">Wise Transfer</span>
                     </div>
-                    <p className="text-sm text-green-700">{t.recommended} - {t.lowerFees}</p>
+                    <p className="text-sm text-green-700">Recommended - Lower Fees</p>
                   </div>
                   
                   <div className="bg-burgundy-50 border border-burgundy-200 rounded-lg p-4">
                     <div className="flex items-center space-x-2 mb-2">
                       <CreditCard className="h-5 w-5 text-burgundy-600" />
-                      <span className="font-medium text-burgundy-800">{t.bankTransfer}</span>
+                      <span className="font-medium text-burgundy-800">Bank Transfer</span>
                     </div>
-                    <p className="text-sm text-burgundy-700">{t.traditional} - 2% discount</p>
+                    <p className="text-sm text-burgundy-700">Traditional - 2% discount</p>
                   </div>
                 </div>
               </div>
 
               {/* Guarantee */}
               <div className="bg-burgundy-50 rounded-lg p-6">
-                <h4 className="font-bold text-burgundy-900 mb-2">{t.ourGuarantee}</h4>
+                <h4 className="font-bold text-burgundy-900 mb-2">Our Guarantee</h4>
                 <p className="text-burgundy-800 text-sm">
-                  {t.guaranteeDescription}
+                  Every watch comes with our authenticity guarantee and professional inspection certificate.
                 </p>
               </div>
             </div>
