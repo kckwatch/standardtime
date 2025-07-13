@@ -12,13 +12,11 @@ interface Order {
   phone: string;
   address: string;
   city: string;
-  country: string;
   postal_code: string;
   watch_brand: string;
   watch_model: string;
   watch_year: string;
   price: string;
-  total: number;
   payment_method: string;
   customs_assistance: boolean;
   status: 'pending' | 'payment_approved' | 'shipping_in_progress' | 'delivery_completed';
