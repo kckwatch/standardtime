@@ -15,7 +15,6 @@ interface Order {
   postal_code: string;
   watch_brand: string;
   watch_model: string;
-  watch_year: string;
   price: string;
   payment_method: string;
   customs_assistance: boolean;
