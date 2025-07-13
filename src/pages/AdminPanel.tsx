@@ -34,7 +34,6 @@ interface Member {
   phone?: string;
   address?: string;
   city?: string;
-  country?: string;
   created_at: string;
   is_admin: boolean;
 }
