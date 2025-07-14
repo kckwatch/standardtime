@@ -175,15 +175,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Signup result:', data);
 
 
-if (data.user) {
-  await supabase.from('members').insert({
-    id: data.user.id,
-    email: email,
-    display_name: fullName,
-    created_at: new Date().toISOString(),
-    is_admin: false
-  });
-}
+      // Profile will be created automatically by the database trigger
+      // No need to manually insert into profiles table here
 
       // If user needs to confirm email
       if (data.user && !data.session) {

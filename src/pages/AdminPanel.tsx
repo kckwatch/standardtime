@@ -103,60 +103,75 @@ const AdminPanel = () => {
   const fetchMembers = async () => {
     try {
       console.log('Fetching members...');
-      const { data, error } = await supabase
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.error('Error fetching members:', error);
-        throw error;
+      if (profilesError) {
+        console.error('Error fetching members:', profilesError);
+        // Don't throw error, just log it and continue with empty array
+        console.log('Continuing with empty members array');
+        setMembers([]);
+        return;
       }
       
-      console.log('Members fetched:', data);
-      setMembers(data || []);
+      console.log('Members fetched:', profilesData);
+      setMembers(profilesData || []);
     } catch (error) {
       console.error('Error fetching members:', error);
+      // Set empty array instead of throwing error
+      setMembers([]);
     }
   };
 
   const fetchChatMessages = async () => {
     try {
       console.log('Fetching chat messages...');
-      const { data, error } = await supabase
+      const { data: chatData, error: chatError } = await supabase
         .from('chat_messages')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.error('Error fetching chat messages:', error);
-        throw error;
+      if (chatError) {
+        console.error('Error fetching chat messages:', chatError);
+        // Don't throw error, just log it and continue with empty array
+        console.log('Continuing with empty chat messages array');
+        setChatMessages([]);
+        return;
       }
       
-      console.log('Chat messages fetched:', data);
-      setChatMessages(data || []);
+      console.log('Chat messages fetched:', chatData);
+      setChatMessages(chatData || []);
     } catch (error) {
       console.error('Error fetching chat messages:', error);
+      // Set empty array instead of throwing error
+      setChatMessages([]);
     }
   };
 
   const fetchEmailLogs = async () => {
     try {
       console.log('Fetching email logs...');
-      const { data, error } = await supabase
+      const { data: emailData, error: emailError } = await supabase
         .from('email_logs')
         .select('*')
         .order('sent_at', { ascending: false });
       
-      if (error) {
-        console.error('Error fetching email logs:', error);
-        throw error;
+      if (emailError) {
+        console.error('Error fetching email logs:', emailError);
+        // Don't throw error, just log it and continue with empty array
+        console.log('Continuing with empty email logs array');
+        setEmailLogs([]);
+        return;
       }
       
-      console.log('Email logs fetched:', data);
-      setEmailLogs(data || []);
+      console.log('Email logs fetched:', emailData);
+      setEmailLogs(emailData || []);
     } catch (error) {
       console.error('Error fetching email logs:', error);
+      // Set empty array instead of throwing error
+      setEmailLogs([]);
     }
   };
 
