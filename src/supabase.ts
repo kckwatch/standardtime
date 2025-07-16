@@ -131,7 +131,6 @@ interface Database {
       }
       chat_messages: {
         Row: {
-          id: string | null
           message: string | null
           sender: string | null
           customer_email: string | null
@@ -139,7 +138,7 @@ interface Database {
           created_at: string
         }
         Insert: {
-          id?: string | null
+
           message: string | null
           sender: string | null
           customer_email?: string | null
@@ -147,7 +146,7 @@ interface Database {
           created_at?: string
         }
         Update: {
-          id?: string | null
+        
           message?: string | null
           sender?: string | null
           customer_email?: string | null
