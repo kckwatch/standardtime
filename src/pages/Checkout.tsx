@@ -166,8 +166,7 @@ const Checkout: React.FC = () => {
         payment_method: formData.paymentMethod,
         customs_assistance: formData.customsAssistance,
         status: 'pending',
-        order_date: new Date().toISOString(),
-        created_at: new Date().toISOString()
+        order_date: new Date().toISOString()
       };
       
       console.log('Submitting order data:', orderData);
