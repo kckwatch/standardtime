@@ -89,8 +89,7 @@ interface Database {
           watch_id?: number | null
           watch_brand?: string | null
           watch_model?: string | null
-          watch_year?: string | null
-          watch_condition?: string | null
+        
           price?: string | null
         
           total?: number | null
