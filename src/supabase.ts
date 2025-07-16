@@ -147,9 +147,9 @@ interface Database {
           created_at?: string
         }
         Update: {
-          id?: string
-          message?: string
-          sender?: string
+          id?: string | null
+          message?: string | null
+          sender?: string | null
           customer_email?: string | null
           customer_name?: string | null
           created_at?: string
