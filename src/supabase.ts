@@ -63,25 +63,17 @@ interface Database {
           watch_id: number | null
           watch_brand: string | null
           watch_model: string | null
-          watch_year: string | null
-          watch_condition: string | null
+         
+         
           price: string | null
-          original_price: string | null
-          subtotal: number | null
-          shipping: number
-          discount: number
+         
           total: number | null
           currency: string
           payment_method: string | null
           customs_assistance: boolean
-          status: string
-          tracking_number: string | null
+          
+         
           order_date: string | null
-          created_at: string
-          updated_at: string
-          payment_approved_at: string | null
-          shipped_at: string | null
-          delivered_at: string | null
         }
         Insert: {
           id?: string
