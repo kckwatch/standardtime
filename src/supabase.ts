@@ -99,11 +99,7 @@ interface Database {
           status?: string
           tracking_number?: string | null
           order_date?: string | null
-          created_at?: string
-          updated_at?: string
-          payment_approved_at?: string | null
-          shipped_at?: string | null
-          delivered_at?: string | null
+         
         }
         Update: {
           id?: string
