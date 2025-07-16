@@ -119,8 +119,8 @@ interface Database {
           price?: string | null
           original_price?: string | null
           subtotal?: number | null
-          shipping?: number
-          discount?: number
+  
+
           total?: number | null
           currency?: string
           payment_method?: string | null
