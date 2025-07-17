@@ -465,7 +465,7 @@ const AdminPanel = () => {
                       <p><strong>Name:</strong> {order.customer_name}</p>
                       <p><strong>Email:</strong> {order.email}</p>
                       <p><strong>Phone:</strong> {order.phone || 'N/A'}</p>
-                      <p><strong>Address:</strong> {order.address || 'N/A'}, {order.city || \'N/A'}, {order.country || \'N/A'}</p>
+                      <p><strong>Address:</strong> {order.address || 'N/A'}, {order.city || 'N/A'}, {order.country || 'N/A'}</p>
                       <p><strong>Postal Code:</strong> {order.postal_code || 'N/A'}</p>
                       <p><strong>Customs Assistance:</strong> {order.customs_assistance ? 'Yes' : 'No'}</p>
                     </div>
