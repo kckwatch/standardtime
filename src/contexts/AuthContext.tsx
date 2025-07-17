@@ -195,7 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           data: {
             full_name: fullName,
             is_admin: isAdminEmail,
-          }
+          },
           emailRedirectTo: undefined, // Disable email confirmation for admin
         },
       });
