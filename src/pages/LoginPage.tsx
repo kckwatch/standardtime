@@ -43,12 +43,7 @@ const LoginPage: React.FC = () => {
     try {
       if (isLogin) {
         await signIn(email, password);
-        // Check if user is admin and redirect accordingly
-        if (email === 'standardtimepiece@gmail.com') {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
+        navigate('/');
       } else {
         // Validate form for signup
         if (!fullName.trim()) {
@@ -69,24 +64,21 @@ const LoginPage: React.FC = () => {
           setNeedsVerification(true);
           setSuccess('Account created! Please check your email and click the verification link to complete your registration.');
         } else {
-          // Check if user is admin and redirect accordingly
-          if (email === 'standardtimepiece@gmail.com') {
-            navigate('/admin');
-          } else {
-            navigate('/');
-          }
+          navigate('/');
         }
       }
     } catch (error: any) {
       console.error("Authentication failed:", error);
       
       // Handle specific error codes
-      if (error.message?.includes('Invalid login credentials')) {
+      if (error.message?.includes('Invalid login credentials') || error.message?.includes('invalid_credentials')) {
         setError('Invalid email or password. Please check your credentials and try again.');
       } else if (error.message?.includes('Email not confirmed')) {
         setError('Please verify your email address before signing in. Check your inbox for a verification link.');
       } else if (error.message?.includes('User already registered')) {
         setError('This email is already registered. Please sign in instead.');
+      } else if (error.message?.includes('Database error saving new user')) {
+        setError('There was an issue creating your account. Please try again or contact support.');
       } else {
         setError(error.message || 'Authentication failed. Please try again.');
       }

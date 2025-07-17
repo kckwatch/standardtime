@@ -76,56 +76,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Loading profile for user:', authUser.email);
       
       // Check if user profile exists in profiles table
-      const { data: profiles, error } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
-        .select('id, email, display_name, phone, address, city, country, is_admin')
+        .select('*')
         .eq('id', authUser.id)
-        .maybeSingle();
+        .single();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error loading profile:', error);
+        
+        // If profile doesn't exist, create it
+        if (error.code === 'PGRST116') {
+          await createUserProfile(authUser);
+          return;
+        }
       }
 
-      const profile = profiles;
-
-      // Create profile if it doesn't exist
-      if (!profile) {
-        console.log('Creating new profile for user:', authUser.email);
-        
-        const newProfile = {
-          id: authUser.id,
-          email: authUser.email || '',
-          display_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
-          is_admin: authUser.email === 'standardtimepiece@gmail.com'
-        };
-
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert([newProfile]);
-
-        if (insertError) {
-          console.error('Error creating profile:', insertError);
-        }
-
-        setUser({
-          id: authUser.id,
-          email: authUser.email || '',
-          displayName: newProfile.display_name,
-          isAdmin: newProfile.is_admin,
-          emailConfirmed: true // Skip email confirmation for now
-        });
-      } else {
+      if (profile) {
         setUser({
           id: profile.id,
           email: authUser.email || '',
           displayName: profile.display_name || '',
           isAdmin: profile.is_admin || authUser.email === 'standardtimepiece@gmail.com',
-          emailConfirmed: true // Skip email confirmation for now
+          emailConfirmed: true
         });
+      } else {
+        // Create profile if it doesn't exist
+        await createUserProfile(authUser);
       }
     } catch (error) {
       console.error('Error in loadUserProfile:', error);
-      // Set basic user info even if profile creation fails
+      // Set basic user info even if profile loading fails
       setUser({
         id: authUser.id,
         email: authUser.email || '',
@@ -135,6 +116,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const createUserProfile = async (authUser: User) => {
+    try {
+      console.log('Creating new profile for user:', authUser.email);
+      
+      const newProfile = {
+        id: authUser.id,
+        email: authUser.email || '',
+        display_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
+        is_admin: authUser.email === 'standardtimepiece@gmail.com',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .insert([newProfile]);
+
+      if (error) {
+        console.error('Error creating profile:', error);
+        throw error;
+      }
+
+      setUser({
+        id: authUser.id,
+        email: authUser.email || '',
+        displayName: newProfile.display_name,
+        isAdmin: newProfile.is_admin,
+        emailConfirmed: true
+      });
+    } catch (error) {
+      console.error('Error creating user profile:', error);
+      // Set basic user info even if profile creation fails
+      setUser({
+        id: authUser.id,
+        email: authUser.email || '',
+        displayName: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
+        isAdmin: authUser.email === 'standardtimepiece@gmail.com',
+        emailConfirmed: true
+      });
     }
   };
 
@@ -159,23 +182,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       console.log('Signing up user:', email);
 
-      // Skip email confirmation for now
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
-          },
-          emailRedirectTo: undefined // Skip email confirmation
+          }
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Signup error:', error);
+        throw error;
+      }
 
-      console.log('Signup result:', data);
+      console.log('Signup successful:', data);
 
-      // Auto-confirm the user for now (skip email verification)
+      // If user is immediately confirmed, create profile
+      if (data.user && !data.user.email_confirmed_at) {
+        return { needsVerification: true };
+      }
+
       return {};
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -192,7 +220,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Sign in error:', error);
+        throw error;
+      }
 
       console.log('Sign in successful:', data.user?.email);
     } catch (error: any) {
