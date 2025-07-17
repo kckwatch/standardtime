@@ -148,7 +148,11 @@ const Checkout: React.FC = () => {
     try {
       const pricing = calculatePricing();
       
+      // Generate a simple 6-digit order number
+      const orderNumber = Math.floor(100000 + Math.random() * 900000).toString();
+      
       const orderData = {
+        order_number: orderNumber,
         user_id: user?.id || null,
         customer_name: formData.fullName,
         email: formData.email,
@@ -160,6 +164,7 @@ const Checkout: React.FC = () => {
         watch_id: orderItem.id.toString(),
         watch_brand: orderItem.brand,
         watch_model: orderItem.model,
+        watch_year: orderItem.year || new Date().getFullYear().toString(),
         price: orderItem.price,
         total: pricing.total,
         currency: currency,
@@ -172,11 +177,11 @@ const Checkout: React.FC = () => {
       console.log('Submitting order data:', orderData);
       
       try {
-        // Save order to Supabase - order number will be auto-generated
+        // Save order to Supabase
         const { data, error } = await supabase
           .from('orders')
           .insert([orderData])
-          .select('order_number')
+          .select('*')
           .single();
         
         if (error) {
@@ -184,12 +189,12 @@ const Checkout: React.FC = () => {
           throw new Error(`Database error: ${error.message}`);
         }
         
-        if (!data || !data.order_number) {
-          throw new Error('Order was created but no order number was returned');
+        if (!data) {
+          throw new Error('Order was created but no data was returned');
         }
         
         console.log('Order created successfully:', data);
-        setOrderNumber(data.order_number);
+        setOrderNumber(orderNumber);
         
         // Move to step 4 immediately after successful order creation
         setCurrentStep(4);

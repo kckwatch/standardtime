@@ -76,7 +76,7 @@ const LiveChat = () => {
     if (message.trim()) {
       try {
         if (!customerEmail) {
-          console.log('No customer email, cannot send message');
+          alert('Please sign in to send messages');
           return;
         }
 
@@ -94,17 +94,19 @@ const LiveChat = () => {
 
         if (error) {
           console.error('Error sending message:', error);
-          // Don't throw error, just log it
-          console.log('Message send failed, but continuing');
+          alert('Failed to send message. Please try again.');
           return;
         }
         
         console.log('Message sent successfully');
         setMessage('');
-        fetchMessages();
+        // Refresh messages after a short delay
+        setTimeout(() => {
+          fetchMessages();
+        }, 500);
       } catch (error) {
         console.error('Error sending message:', error);
-        console.log('Chat error handled gracefully');
+        alert('Failed to send message. Please try again.');
       }
     }
   };

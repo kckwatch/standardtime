@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .from('profiles')
         .select('id, email, display_name, phone, address, city, country, is_admin')
         .eq('id', authUser.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error loading profile:', error);
@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const profile = profiles;
 
-      // Create profile if it doesn't exist (fallback in case trigger didn't work)
+      // Create profile if it doesn't exist
       if (!profile) {
         console.log('Creating new profile for user:', authUser.email);
         
@@ -112,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email: authUser.email || '',
           displayName: newProfile.display_name,
           isAdmin: newProfile.is_admin,
-          emailConfirmed: authUser.email_confirmed_at ? true : false
+          emailConfirmed: true // Skip email confirmation for now
         });
       } else {
         setUser({
@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email: authUser.email || '',
           displayName: profile.display_name || '',
           isAdmin: profile.is_admin || authUser.email === 'standardtimepiece@gmail.com',
-          emailConfirmed: authUser.email_confirmed_at ? true : false
+          emailConfirmed: true // Skip email confirmation for now
         });
       }
     } catch (error) {
@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: authUser.email || '',
         displayName: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
         isAdmin: authUser.email === 'standardtimepiece@gmail.com',
-        emailConfirmed: authUser.email_confirmed_at ? true : false
+        emailConfirmed: true
       });
     } finally {
       setLoading(false);
@@ -159,6 +159,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       console.log('Signing up user:', email);
 
+      // Skip email confirmation for now
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -166,7 +167,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${window.location.origin}/signin`
+          emailRedirectTo: undefined // Skip email confirmation
         },
       });
 
@@ -174,15 +175,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       console.log('Signup result:', data);
 
-
-      // Profile will be created automatically by the database trigger
-      // No need to manually insert into profiles table here
-
-      // If user needs to confirm email
-      if (data.user && !data.session) {
-        return { needsVerification: true };
-      }
-
+      // Auto-confirm the user for now (skip email verification)
       return {};
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -202,10 +195,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
 
       console.log('Sign in successful:', data.user?.email);
-
-      if (!data.user?.email_confirmed_at) {
-        throw new Error('Please verify your email address before signing in. Check your inbox for a verification link.');
-      }
     } catch (error: any) {
       console.error('Sign in error:', error);
       throw error;
@@ -223,7 +212,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setSession(null);
     } catch (error: any) {
       console.error('Sign out error:', error);
-      throw error;
+      // Force logout even on error
+      setUser(null);
+      setSession(null);
     }
   };
 

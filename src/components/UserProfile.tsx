@@ -101,12 +101,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
         
         if (ordersError) {
           console.error('Error loading orders:', ordersError);
+          setUserOrders([]);
         } else {
           setUserOrders(orders || []);
         }
       } catch (error) {
         console.error('Error in fetchUserData:', error);
         setError('Failed to load user data');
+        setUserOrders([]);
       }
     };
     
@@ -172,12 +174,14 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
-      case 'payment_approved':
+      case 'confirmed':
         return 'bg-blue-100 text-blue-800';
-      case 'shipping_in_progress':
+      case 'photos_sent':
         return 'bg-purple-100 text-purple-800';
-      case 'delivery_completed':
+      case 'shipped':
         return 'bg-green-100 text-green-800';
+      case 'delivered':
+        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -187,11 +191,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
     switch (status) {
       case 'pending':
         return <Calendar className="h-4 w-4" />;
-      case 'payment_approved':
+      case 'confirmed':
         return <CheckCircle className="h-4 w-4" />;
-      case 'shipping_in_progress':
+      case 'photos_sent':
+        return <Eye className="h-4 w-4" />;
+      case 'shipped':
         return <Truck className="h-4 w-4" />;
-      case 'delivery_completed':
+      case 'delivered':
         return <Package className="h-4 w-4" />;
       default:
         return <Calendar className="h-4 w-4" />;
@@ -201,13 +207,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   const formatStatus = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'Payment Pending';
-      case 'payment_approved':
-        return 'Payment Approved';
-      case 'shipping_in_progress':
-        return 'Shipping in Progress';
-      case 'delivery_completed':
-        return 'Delivery Completed';
+        return 'Pending Confirmation';
+      case 'confirmed':
+        return 'Confirmed';
+      case 'photos_sent':
+        return 'Photos & Videos Sent';
+      case 'shipped':
+        return 'Shipped';
+      case 'delivered':
+        return 'Delivered';
       default:
         return status;
     }
@@ -403,8 +411,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 {userOrders.length === 0 ? (
                   <div className="text-center py-8">
                     <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h4 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h4>
-                    <p className="text-gray-500">When you make a purchase, your orders will appear here.</p>
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">No order information</h4>
+                    <p className="text-gray-500">Your orders will appear here after you make a purchase.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -414,7 +422,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                           <div>
                             <h4 className="font-bold text-gray-900">Order #{order.order_number}</h4>
                             <p className="text-sm text-gray-600">
-                              {order.watch_brand} {order.watch_model} ({order.watch_year})
+                              {order.watch_brand} {order.watch_model}
                             </p>
                             <p className="text-sm font-medium text-burgundy-900">${order.total}</p>
                           </div>
@@ -442,18 +450,28 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                           </div>
                           
                           <div className="flex items-center space-x-2 text-sm">
-                            <div className={`w-2 h-2 rounded-full ${order.payment_approved_at ? 'bg-green-500' : 'bg-gray-300'}`} />
-                            <span className="text-gray-600">Payment Approved</span>
-                            {order.payment_approved_at && (
+                            <div className={`w-2 h-2 rounded-full ${order.confirmed_at ? 'bg-green-500' : 'bg-gray-300'}`} />
+                            <span className="text-gray-600">Order Confirmed</span>
+                            {order.confirmed_at && (
                               <span className="text-gray-500">
-                                {new Date(order.payment_approved_at).toLocaleDateString()}
+                                {new Date(order.confirmed_at).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 text-sm">
+                            <div className={`w-2 h-2 rounded-full ${order.photos_sent_at ? 'bg-green-500' : 'bg-gray-300'}`} />
+                            <span className="text-gray-600">Photos & Videos Sent</span>
+                            {order.photos_sent_at && (
+                              <span className="text-gray-500">
+                                {new Date(order.photos_sent_at).toLocaleDateString()}
                               </span>
                             )}
                           </div>
                           
                           <div className="flex items-center space-x-2 text-sm">
                             <div className={`w-2 h-2 rounded-full ${order.shipped_at ? 'bg-green-500' : 'bg-gray-300'}`} />
-                            <span className="text-gray-600">Shipping Started</span>
+                            <span className="text-gray-600">Shipped</span>
                             {order.shipped_at && (
                               <span className="text-gray-500">
                                 {new Date(order.shipped_at).toLocaleDateString()}
@@ -463,7 +481,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                           
                           <div className="flex items-center space-x-2 text-sm">
                             <div className={`w-2 h-2 rounded-full ${order.delivered_at ? 'bg-green-500' : 'bg-gray-300'}`} />
-                            <span className="text-gray-600">Delivery Completed</span>
+                            <span className="text-gray-600">Delivered</span>
                             {order.delivered_at && (
                               <span className="text-gray-500">
                                 {new Date(order.delivered_at).toLocaleDateString()}
