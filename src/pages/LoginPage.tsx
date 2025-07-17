@@ -14,9 +14,11 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [needsVerification, setNeedsVerification] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signUp, resetPassword, resendVerification } = useAuth();
+  const { signIn, signUp, resetPassword } = useAuth();
+
+  // Check if this is admin email
+  const isAdminEmail = email === 'standardtimepiece@gmail.com';
 
   // Password validation
   const validatePassword = (password: string) => {
@@ -43,7 +45,8 @@ const LoginPage: React.FC = () => {
     try {
       if (isLogin) {
         await signIn(email, password);
-        navigate('/');
+        setSuccess('Successfully signed in!');
+        setTimeout(() => navigate('/'), 1000);
       } else {
         // Validate form for signup
         if (!fullName.trim()) {
@@ -58,13 +61,18 @@ const LoginPage: React.FC = () => {
           throw new Error('Passwords do not match');
         }
 
+        // Special handling for admin email
+        if (isAdminEmail) {
+          setSuccess('Creating admin account...');
+        }
+
         const result = await signUp(email, password, confirmPassword, fullName);
         
         if (result.needsVerification) {
-          setNeedsVerification(true);
           setSuccess('Account created! Please check your email and click the verification link to complete your registration.');
         } else {
-          navigate('/');
+          setSuccess('Account created successfully!');
+          setTimeout(() => navigate('/'), 1000);
         }
       }
     } catch (error: any) {
@@ -72,13 +80,19 @@ const LoginPage: React.FC = () => {
       
       // Handle specific error codes
       if (error.message?.includes('Invalid login credentials') || error.message?.includes('invalid_credentials')) {
-        setError('Invalid email or password. Please check your credentials and try again.');
+        if (isAdminEmail && !isLogin) {
+          setError('Admin account setup: Please use a strong password with letters and numbers.');
+        } else {
+          setError('Invalid email or password. Please check your credentials and try again.');
+        }
       } else if (error.message?.includes('Email not confirmed')) {
         setError('Please verify your email address before signing in. Check your inbox for a verification link.');
       } else if (error.message?.includes('User already registered')) {
         setError('This email is already registered. Please sign in instead.');
       } else if (error.message?.includes('Database error saving new user')) {
-        setError('There was an issue creating your account. Please try again or contact support.');
+        setError('Account creation failed. Please try again or contact support.');
+      } else if (error.message?.includes('Request rate limit reached')) {
+        setError('Too many requests. Please wait a moment and try again.');
       } else {
         setError(error.message || 'Authentication failed. Please try again.');
       }
@@ -106,25 +120,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleResendVerification = async () => {
-    if (!email) {
-      setError('Please enter your email address first');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      await resendVerification(email);
-      setSuccess('Verification email sent! Check your inbox and click the verification link.');
-    } catch (error: any) {
-      setError(error.message || 'Failed to resend verification email');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-burgundy-900 via-burgundy-800 to-burgundy-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
@@ -133,34 +128,14 @@ const LoginPage: React.FC = () => {
             <User className="h-6 w-6 text-burgundy-900" />
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
+            {isLogin ? 'Welcome Back' : (isAdminEmail ? 'Admin Account Setup' : 'Create Account')}
           </h2>
           <p className="text-burgundy-200">
-            {isLogin ? 'Sign in to your account' : 'Join StandardTime today'}
+            {isLogin ? 'Sign in to your account' : (isAdminEmail ? 'Set up your admin account' : 'Join StandardTime today')}
           </p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-          {needsVerification && (
-            <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-              <div className="flex items-center space-x-2 text-blue-400 mb-2">
-                <Mail className="h-5 w-5" />
-                <span className="font-medium">Email Verification Required</span>
-              </div>
-              <p className="text-blue-300 text-sm mb-3">
-                We've sent a verification link to <strong>{email}</strong>. 
-                Please check your inbox and click the link to activate your account.
-              </p>
-              <button
-                onClick={handleResendVerification}
-                disabled={loading}
-                className="text-blue-400 hover:text-blue-300 text-sm underline disabled:opacity-50"
-              >
-                Resend verification email
-              </button>
-            </div>
-          )}
-
           {success && (
             <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
               <div className="flex items-center space-x-2 text-green-400">
@@ -179,6 +154,19 @@ const LoginPage: React.FC = () => {
             </div>
           )}
 
+          {/* Admin Account Notice */}
+          {isAdminEmail && !isLogin && (
+            <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <div className="flex items-center space-x-2 text-yellow-400 mb-2">
+                <User className="h-5 w-5" />
+                <span className="font-medium">Admin Account Setup</span>
+              </div>
+              <p className="text-yellow-300 text-sm">
+                You are setting up the admin account for StandardTime. This account will have full administrative privileges.
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <div>
@@ -193,7 +181,7 @@ const LoginPage: React.FC = () => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-burgundy-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all"
-                    placeholder="Enter your full name"
+                    placeholder={isAdminEmail ? "Admin Full Name" : "Enter your full name"}
                     required={!isLogin}
                   />
                 </div>
@@ -216,6 +204,9 @@ const LoginPage: React.FC = () => {
                   required
                 />
               </div>
+              {isAdminEmail && (
+                <p className="mt-1 text-xs text-yellow-400">Admin email detected</p>
+              )}
             </div>
 
             <div>
@@ -230,7 +221,7 @@ const LoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-burgundy-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all"
-                  placeholder="Enter your password"
+                  placeholder={isAdminEmail && !isLogin ? "Create admin password" : "Enter your password"}
                   required
                 />
                 <button
@@ -295,7 +286,7 @@ const LoginPage: React.FC = () => {
               disabled={loading || (!isLogin && (!passwordValidation.isValid || password !== confirmPassword))}
               className="w-full bg-white text-burgundy-900 py-3 px-4 rounded-lg font-medium hover:bg-burgundy-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-burgundy-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
+              {loading ? 'Please wait...' : (isLogin ? 'Sign In' : (isAdminEmail ? 'Create Admin Account' : 'Create Account'))}
             </button>
           </form>
 
@@ -318,7 +309,6 @@ const LoginPage: React.FC = () => {
                   setIsLogin(!isLogin);
                   setError('');
                   setSuccess('');
-                  setNeedsVerification(false);
                   // Clear form fields
                   setEmail('');
                   setPassword('');

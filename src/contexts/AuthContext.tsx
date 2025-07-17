@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const createUserProfile = async (authUser: User) => {
+  const createUserProfile = async (authUser: User, isAdmin: boolean = false) => {
     try {
       console.log('Creating new profile for user:', authUser.email);
       
@@ -127,14 +127,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: authUser.id,
         email: authUser.email || '',
         display_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
-        is_admin: authUser.email === 'standardtimepiece@gmail.com',
+        is_admin: isAdmin || authUser.email === 'standardtimepiece@gmail.com',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
 
       const { error } = await supabase
         .from('profiles')
-        .insert([newProfile]);
+        .upsert([newProfile], { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
+        });
 
       if (error) {
         console.error('Error creating profile:', error);
@@ -155,7 +158,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: authUser.id,
         email: authUser.email || '',
         displayName: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
-        isAdmin: authUser.email === 'standardtimepiece@gmail.com',
+        isAdmin: isAdmin || authUser.email === 'standardtimepiece@gmail.com',
         emailConfirmed: true
       });
     }
@@ -182,13 +185,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       console.log('Signing up user:', email);
 
+      // Special handling for admin email - disable email confirmation
+      const isAdminEmail = email === 'standardtimepiece@gmail.com';
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
+            is_admin: isAdminEmail,
           }
+          emailRedirectTo: undefined, // Disable email confirmation for admin
         },
       });
 
@@ -199,8 +207,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       console.log('Signup successful:', data);
 
-      // If user is immediately confirmed, create profile
-      if (data.user && !data.user.email_confirmed_at) {
+      // For admin email, try to create profile immediately
+      if (isAdminEmail && data.user) {
+        try {
+          await createUserProfile(data.user, true); // true for admin
+          return {}; // No verification needed for admin
+        } catch (profileError) {
+          console.error('Admin profile creation failed:', profileError);
+          // Continue with normal flow
+        }
+      }
+      
+      // If user needs email verification
+      if (data.user && !data.user.email_confirmed_at && !isAdminEmail) {
         return { needsVerification: true };
       }
 
