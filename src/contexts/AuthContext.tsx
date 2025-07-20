@@ -75,22 +75,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('Loading profile for user:', authUser.email);
       
-      // Check if user profile exists in profiles table
+      // First, try to create profile if it doesn't exist
+      const { error: upsertError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: authUser.id,
+          email: authUser.email || '',
+          display_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
+          is_admin: authUser.email === 'standardtimepiece@gmail.com',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, { 
+          onConflict: 'id',
+          ignoreDuplicates: true 
+        });
+
+      if (upsertError) {
+        console.warn('Profile upsert warning:', upsertError);
+      }
+
+      // Now load the profile
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', authUser.id)
         .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error loading profile:', error);
-        
-        // If profile doesn't exist, create it
-        if (error.code === 'PGRST116') {
-          await createUserProfile(authUser);
-          return;
-        }
-      }
 
       if (profile) {
         setUser({
@@ -100,9 +109,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           isAdmin: profile.is_admin || authUser.email === 'standardtimepiece@gmail.com',
           emailConfirmed: true
         });
-      } else {
-        // Create profile if it doesn't exist
-        await createUserProfile(authUser);
       }
     } catch (error) {
       console.error('Error in loadUserProfile:', error);
