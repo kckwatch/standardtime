@@ -75,31 +75,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('Loading profile for user:', authUser.email);
       
-      // First, try to create profile if it doesn't exist
-      const { error: upsertError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: authUser.id,
-          email: authUser.email || '',
-          display_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
-          is_admin: authUser.email === 'standardtimepiece@gmail.com',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }, { 
-          onConflict: 'id',
-          ignoreDuplicates: true 
-        });
-
-      if (upsertError) {
-        console.warn('Profile upsert warning:', upsertError);
-      }
-
-      // Now load the profile
-      const { data: profile, error } = await supabase
+      // First, try to get existing profile
+      const { data: existingProfile, error: selectError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', authUser.id)
         .single();
+
+      if (selectError && selectError.code !== 'PGRST116') {
+        console.error('Error loading profile:', selectError);
+      }
+
+      let profile = existingProfile;
+
+      // If profile doesn't exist, create it
+      if (!profile) {
+        console.log('Creating new profile for user:', authUser.email);
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: authUser.id,
+            email: authUser.email || '',
+            display_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
+            is_admin: authUser.email === 'standardtimepiece@gmail.com',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.warn('Profile creation warning:', insertError);
+          // Continue with basic user info even if profile creation fails
+        } else {
+          profile = newProfile;
+        }
+      }
 
       if (profile) {
         setUser({
@@ -107,6 +118,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email: authUser.email || '',
           displayName: profile.display_name || '',
           isAdmin: profile.is_admin || authUser.email === 'standardtimepiece@gmail.com',
+          emailConfirmed: true
+        });
+      }
+      else {
+        // Fallback: set basic user info even without profile
+        setUser({
+          id: authUser.id,
+          email: authUser.email || '',
+          displayName: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '',
+          isAdmin: authUser.email === 'standardtimepiece@gmail.com',
           emailConfirmed: true
         });
       }
